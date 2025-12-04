@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D AI Playground</title>
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="top-bar">
+      <div class="branding">
+        <div class="logo">3D</div>
+        <div class="titles">
+          <h1>Interactive 3D Decision Boundary Lab</h1>
+          <p>Explore how machine learning learns to separate classes in 3D space.</p>
+        </div>
+      </div>
+      <button class="pill" id="helpToggle">Concept hints</button>
+    </header>
+
+    <main class="layout">
+      <section class="panel controls">
+        <div class="panel-header">
+          <h2>Training controls</h2>
+          <span class="hint" title="Tweak parameters to see how optimization responds.">?</span>
+        </div>
+        <div class="field">
+          <label for="learningRate">Learning rate <span class="tooltip" data-tip="How big each gradient descent step is.">?</span></label>
+          <input type="range" id="learningRate" min="0.0001" max="0.5" step="0.0001" value="0.01" />
+          <div class="value" id="learningRateValue">0.0100</div>
+        </div>
+        <div class="field">
+          <label for="epochs">Epochs <span class="tooltip" data-tip="How many full passes over the dataset.">?</span></label>
+          <input type="range" id="epochs" min="1" max="200" step="1" value="40" />
+          <div class="value" id="epochValue">40</div>
+        </div>
+        <div class="field">
+          <label for="batchSize">Batch size <span class="tooltip" data-tip="Number of samples per gradient update. Smaller batches add noise that may help escape local minima.">?</span></label>
+          <input type="range" id="batchSize" min="4" max="64" step="2" value="16" />
+          <div class="value" id="batchValue">16</div>
+        </div>
+        <div class="field">
+          <label for="optimizer">Algorithm <span class="tooltip" data-tip="Choose between optimizers to see different convergence behaviors.">?</span></label>
+          <select id="optimizer">
+            <option value="sgd">SGD (momentum)</option>
+            <option value="adam">Adam</option>
+            <option value="adagrad">AdaGrad</option>
+          </select>
+        </div>
+        <div class="actions">
+          <button id="startBtn" class="primary">Start training</button>
+          <button id="stopBtn" class="ghost">Stop</button>
+          <button id="resetBtn" class="ghost">Reset</button>
+        </div>
+        <div class="toggles">
+          <label class="toggle">
+            <input type="checkbox" id="autoRotate" checked />
+            <span>Auto rotate</span>
+          </label>
+          <label class="toggle">
+            <input type="checkbox" id="showAnnotations" checked />
+            <span>Show annotations</span>
+          </label>
+        </div>
+        <div class="legend">
+          <div><span class="dot class-a"></span>Class A</div>
+          <div><span class="dot class-b"></span>Class B</div>
+          <div><span class="dot boundary"></span>Decision boundary</div>
+        </div>
+      </section>
+
+      <section class="panel visualization">
+        <div class="panel-header">
+          <h2>3D scatter &amp; boundary</h2>
+          <span class="hint" title="Drag to orbit, scroll to zoom. Boundary updates after each epoch.">?</span>
+        </div>
+        <div id="renderRoot"></div>
+        <div class="annotation-bar" id="annotationBar"></div>
+      </section>
+
+      <section class="panel charts">
+        <div class="panel-header">
+          <h2>Metrics</h2>
+          <span class="hint" title="Loss measures error; accuracy is % of correct predictions on the dataset.">?</span>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Loss</h3>
+              <span class="tooltip" data-tip="Lower is better. Overfitting: training loss low but accuracy plateaus.">?</span>
+            </div>
+            <canvas id="lossChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Accuracy</h3>
+              <span class="tooltip" data-tip="Correct predictions / total. Watch for jumps when batch size is small.">?</span>
+            </div>
+            <canvas id="accChart"></canvas>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="tooltip-panel" id="helpPanel">
+    <div class="tooltip-header">
+      <h3>Concept cheatsheet</h3>
+      <button id="closeHelp">Close</button>
+    </div>
+    <ul>
+      <li><strong>Gradient descent</strong>: adjusts weights opposite the gradient to minimize loss.</li>
+      <li><strong>Learning rate</strong>: step size; too high diverges, too low is slow.</li>
+      <li><strong>Overfitting</strong>: model memorizes noise. Watch for low loss but stagnant accuracy.</li>
+      <li><strong>Decision boundary</strong>: surface where model is uncertain (prediction = 0.5).</li>
+      <li><strong>Batch size</strong>: balances stability vs. exploration; small batches add stochasticity.</li>
+    </ul>
+  </div>
+
+  <script type="module" src="scripts/main.js"></script>
+</body>
+</html>
